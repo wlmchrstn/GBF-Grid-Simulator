@@ -9,6 +9,12 @@ const userSchema = new mongoose.Schema({
         required: true,
         lowercase: true
     },
+    role: {
+        type: String,
+        required: false,
+        enum: ['Admin', 'User'],
+        default: 'User'
+    },
     password: {
         type: String,
         required: true
@@ -65,7 +71,7 @@ User.login = async function(data) {
 
         let user = await User.findOne({
             username: data.username
-        }).select(['username', 'password'])
+        }).select(['username', 'password', 'role'])
         
         let isCorrect = await bcrypt.compare(data.password, user.password)
         if(!isCorrect || !user) {

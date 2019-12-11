@@ -37,13 +37,13 @@ const weaponSchema = new mongoose.Schema({
 weaponSchema.plugin(uniqueValidator);
 var Weapon = mongoose.model('Weapon', weaponSchema);
 
-Weapon.create = async function(data) {
+Weapon.create = async function(data, id) {
     return new Promise(async function(resolve, reject) {
         Weapon.create(data)
             .then(response => {
                 let result = {
                     name: response.name,
-                    level: response.level,
+                    nickname: response.nickname,
                     attack: response.attack,
                     health: response.health,
                     gridPic: response.gridPic,
@@ -66,7 +66,25 @@ Weapon.getAll = async function(data) {
 
 Weapon.search = async function(data) {
     return new Promise(async function(resolve, reject) {
-        let weapon = await Weapon.find({name: data, nickname: data})
+        let weapon = await Weapon.find(data)
         resolve([200, weapon, 'Here is the result!'])
+    })
+}
+
+Weapon.detail = async function(data) {
+    return new Promise(async function(resolve, reject) {
+        let weapon = await Weapon.findById(data)
+        if(weapon) {
+            let result = {
+                _id: weapon._id,
+                name: weapon.name,
+                gridPic: weapon.gridPic,
+                mhPic: weapon.mhPic
+            }
+            resolve([200, result, 'Here is the detail!'])
+        }
+        else {
+            reject([404, 'Not Found!'])
+        }
     })
 }
