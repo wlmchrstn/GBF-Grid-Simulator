@@ -39,7 +39,7 @@ module.exports = {
     },
 
     detail(req, res) {
-        Weapon.detail(req.params.id)
+        Weapon.detail(req.params.weapon)
             .then(result => {
                 result.unshift(res)
                 success(result)

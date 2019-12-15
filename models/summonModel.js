@@ -1,5 +1,6 @@
 const mongoose = require("mongoose");
 const uniqueValidator = require('mongoose-unique-validator');
+const User = require('./userModel')
 
 const summonSchema = new mongoose.Schema({
     name: {
@@ -33,8 +34,10 @@ const summonSchema = new mongoose.Schema({
 weaponSchema.plugin(uniqueValidator);
 var Summon = mongoose.model('Summon', summonSchema);
 
-Summon.create = async function(data, id) {
+Summon.create = async function(data, auth) {
     return new Promise(async function(resolve, reject) {
+        let admin = await User.findbyId(auth)
+        if(admin.role == 'Admin' || admin.role !== 'User')
         Summon.create(data)
             .then(response => {
                 let result = {
@@ -69,7 +72,7 @@ Summon.search = async function(data) {
 }
 
 Summon.detail = async function(data) {
-    return new Promise(async function(data) {
+    return new Promise(async function(resolve, reject) {
         let summon = await Summon.findById(data)
         if(summon) {
             let result = {

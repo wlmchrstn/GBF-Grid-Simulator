@@ -69,9 +69,11 @@ const gridSchema = new mongoose.Schema({
 
 var Grid = mongoose.model('Grid', gridSchema);
 
-Grid.create = async function(data, id) {
+import User from './userModel'
+
+Grid.create = async function(data, auth) {
     return new Promise(async function(resolve, reject) {
-        let dupe = await Grid.findOne({ users: id })
+        let dupe = await Grid.findOne({ users: auth })
         if(!dupe) {
             Grid.create(data)
                 .then(response => {
@@ -89,7 +91,20 @@ Grid.create = async function(data, id) {
 
 Grid.detail = async function(data) {
     return new Promise(async function(resolve, reject) {
-        let grid = await Grid.findOne({ users: data })
+        let grid = await Grid.findOne({ users: data }).populate(['slot1','slot2','slot3','slot4','slot5','slot6','slot7','slot8','slot9','mainSummon','mainHand','summon1','summon2','summon3','summon4'])
         resolve([200, grid, 'Here is your grid!'])
+    })
+}
+
+Grid.update = async function(data, auth, id) {
+    return new Promise(async function(resolve, reject) {
+        let user = await User.findById(auth)
+        await Grid.findByIdAndUpdate(id, data)
+            .then(result => {
+                resolve([200, result, 'Grid saved!'])
+            })
+            .catch(err => {
+                reject([400, 'Failed to save grid!'])
+            })
     })
 }
